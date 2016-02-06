@@ -1,0 +1,159 @@
+#!/bin/bash
+
+printer="/dev/tty.thermal-4tBluetooth"
+
+# prepare a file for printing!
+usage="usage: thermal.sh [-dbt] [file]
+When run with no arguments, prints piped input.
+-f: print a font test and exit
+-h: show this help document
+-d: double line height
+-b: extra space below paragraphs
+-p: actually print the damn thing
+-t: don't advance the paper at the end"
+double=false
+below=false
+print=false
+advance=true
+font_test=false
+
+fonts=$(cat <<EOF
+normal size
+w!chr block normal
+w%char small block
+w$chrs block normal
+w&chars block bold
+wBchar small block
+w0ocrai rot 13w21h
+w char med blk bld
+w"char large block
+w#chars large block
+
+
+double height
+!w!chr block normal
+!w%char small block
+!w$chrs block normal
+!w&chars block bold
+!wBchar small block
+!w0ocrai rot 13w21h
+!w char med blk bld
+!w"char large block
+!w#chars large block
+
+
+double width
+! w!chr block normal
+! w%char small block
+! w$chrs block normal
+! w&chars block bold
+! wBchar small block
+! w0ocrai rot 13w21h
+! w char med blk bld
+! w"char large block
+! w#chars large block
+
+
+double height and width
+!0w!chr block normal
+!0w%char small block
+!0w$chrs block normal
+!0w&chars block bold
+!0wBchar small block
+!0w0ocrai rot 13w21h
+!0w char med blk bld
+!0w"char large block
+!0w#chars large block
+EOF)
+
+
+while getopts ":hfldbpt" opt; do
+  case $opt in
+    d)
+      double=true
+      ;;
+    b)
+      below=true
+      ;;
+    p)
+      print=true
+      ;;
+    t)
+      advance=false
+      ;;
+    f)
+      font_test=true
+      ;;
+    h)
+      echo "$usage" >&2
+      exit 1
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      echo "$usage" >&2
+      exit 1
+      ;;
+    esac
+done
+
+# this shifts off the options
+shift $(($OPTIND - 1))
+
+if $font_test; then
+  echo "$fonts" > "$printer"
+  echo $'\n\n\n\n\n\n\n\n' > "$printer"
+  exit 1
+fi
+
+
+
+# reset the printer
+initializer=$'@'
+
+# double line spacing
+if $double; then
+  echo "HERE"
+  initializer=$intializer$'!'
+fi
+
+# change the font "chars block bold"
+#intializer=$intializer$'w&'
+
+
+# read input to output. either stdin or a file
+if [[ -z $1 ]] ; then
+  output=$(</dev/stdin)
+else
+
+  # check that the file exists
+  if [ ! -e $1 ] || [ -d $1 ]; then
+    echo "File $1 does not exist"
+    exit 1
+  fi
+
+  output=$(cat $1)
+fi
+
+
+# first doubling newlines
+if $below; then 
+  output=`echo "$output" | sed G`
+fi
+
+
+# add line breaks for long lines
+#output=`echo "$output" | fold -s -w 42`
+output=`echo "$output" | fold -s -w 80`
+
+if $advance; then
+  output=$output$'\n\n\n\n\n'
+fi
+
+
+if $print; then
+  echo "$output"
+  echo "$intializer$output" > "$printer"
+else
+  echo "$output"
+fi
+
