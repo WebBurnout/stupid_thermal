@@ -5,7 +5,16 @@ import requests
 
 from image_to_ascii import handle_image_conversion
 
+import os
+from flask import Flask, request, redirect, url_for
+from werkzeug import secure_filename
+
+UPLOAD_FOLDER = '/Users/omar/code/stupid_thermal/uploads/'
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 @app.route('/')
 def index(name=None):
@@ -14,12 +23,42 @@ def index(name=None):
 
 @app.route('/web-print', methods=['POST'])
 def web_print():
-    print request.form
 
-    # with open('/dev/tty.thermal-4tBluetooth', 'w') as f:
-    #     f.write(ascii_art)
+    label_font = 'w&'
+    data_font = '!0w$'
 
-    return 'gooooood work'
+
+    output = label_font + "Name or Identifying Marks:\n"
+    output += data_font + request.form['name'] + "\n"
+
+    output += label_font + "Identity Theft with SSN:\n"
+    output += data_font + request.form['ssn'] + "\n"
+
+    output += label_font + "Stalk at:\n"
+    output += data_font + request.form['location'] + "\n"
+
+    output += label_font + "Message:\n"
+    output += data_font + request.form['message'] + "\n"
+
+    print output
+
+    if request.files:
+        file = request.files['file']
+
+        if file:
+            filename = secure_filename(file.filename)
+            path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(path)
+            ascii_art = handle_image_conversion('{}'.format(path))
+            print ascii_art
+
+    # pic_font = 'w%'
+
+    with open('/dev/tty.thermal-4tBluetooth', 'w') as f:
+        f.write(output)
+        f.write(ascii_art)
+
+    return 'ok'
 
 
 @app.route('/print', methods=['POST'])
@@ -34,6 +73,7 @@ def print_message():
         f.write(requests.get(request.form['MediaUrl0']).content)
         f.close()
         ascii_art = handle_image_conversion('{}'.format(filename))
+        print ascii_art
     else:
         response.message("Face forward and text me a selfie!")
 

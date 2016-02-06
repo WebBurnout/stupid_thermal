@@ -69,7 +69,6 @@ def handle_image_conversion(image_filepath):
         return
 
     image_ascii = convert_image_to_ascii(image)
-    print image_ascii
     return image_ascii
 
 if __name__ == '__main__':

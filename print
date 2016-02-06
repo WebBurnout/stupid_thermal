@@ -57,7 +57,7 @@ double width
 double height and width
 !0w!chr block normal
 !0w%char small block
-!0w$chrs block normal
+!0w\$chrs block normal
 !0w&chars block bold
 !0wBchar small block
 !0w0ocrai rot 13w21h
