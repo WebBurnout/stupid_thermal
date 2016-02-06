@@ -1,15 +1,28 @@
+#! /usr/bin/python
+
 from PIL import Image
 
-ASCII_CHARS = ['#', '?', '%', '.', 'S', '+', '.', '*', ':', ',', '@']
+# ASCII_CHARS = ['#', '?', '%', '.', 'S', '+', '.', '*', ':', ',', '@']
+
+ASCII_CHARS = 'W & U m r 1 | + : .'.split(' ')
+ASCII_CHARS.append(' ')
+
+# .'`,^:";~
+# -_+<>i!lI?
+# /\|()1{}[]
+# rcvunxzjft
+# LCJUYXZO0Q
+# oahkbdpqwm
+# *WMB8&%$#@
 
 
-def scale_image(image, new_width=100):
+def scale_image(image, new_width=85):
     """Resizes an image preserving the aspect ratio.
     """
 
     (original_width, original_height) = image.size
     aspect_ratio = original_height/float(original_width)
-    new_height = int(aspect_ratio * new_width)
+    new_height = int(aspect_ratio * new_width * .6)
 
     new_image = image.resize((new_width, new_height))
     return new_image
@@ -32,7 +45,7 @@ def map_pixels_to_ascii_chars(image, range_width=25):
     return "".join(pixels_to_chars)
 
 
-def convert_image_to_ascii(image, new_width=100):
+def convert_image_to_ascii(image, new_width=85):
     image = scale_image(image)
     image = convert_to_grayscale(image)
 
@@ -56,6 +69,7 @@ def handle_image_conversion(image_filepath):
         return
 
     image_ascii = convert_image_to_ascii(image)
+    print image_ascii
     return image_ascii
 
 if __name__ == '__main__':
@@ -63,3 +77,4 @@ if __name__ == '__main__':
 
     image_file_path = sys.argv[1]
     handle_image_conversion(image_file_path)
+

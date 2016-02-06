@@ -1,10 +1,25 @@
 from flask import Flask, request
+from flask import render_template
 from twilio import twiml
 import requests
 
 from image_to_ascii import handle_image_conversion
 
 app = Flask(__name__)
+
+@app.route('/')
+def index(name=None):
+    return render_template('index.html', name=name)
+
+
+@app.route('/web-print', methods=['POST'])
+def web_print():
+    print request.form
+
+    # with open('/dev/tty.thermal-4tBluetooth', 'w') as f:
+    #     f.write(ascii_art)
+
+    return 'gooooood work'
 
 
 @app.route('/print', methods=['POST'])
