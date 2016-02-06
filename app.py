@@ -27,7 +27,6 @@ def web_print():
     label_font = 'w&'
     data_font = '!0w$'
 
-
     output = label_font + "Name or Identifying Marks:\n"
     output += data_font + request.form['name'] + "\n"
 
@@ -51,8 +50,6 @@ def web_print():
             file.save(path)
             ascii_art = handle_image_conversion('{}'.format(path))
             print ascii_art
-
-    # pic_font = 'w%'
 
     with open('/dev/tty.thermal-4tBluetooth', 'w') as f:
         f.write(output)

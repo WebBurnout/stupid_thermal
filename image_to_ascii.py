@@ -16,13 +16,13 @@ ASCII_CHARS.append(' ')
 # *WMB8&%$#@
 
 
-def scale_image(image, new_width=85):
+def scale_image(image, new_width=140):
     """Resizes an image preserving the aspect ratio.
     """
 
     (original_width, original_height) = image.size
     aspect_ratio = original_height/float(original_width)
-    new_height = int(aspect_ratio * new_width * .6)
+    new_height = int(aspect_ratio * new_width * .4)
 
     new_image = image.resize((new_width, new_height))
     return new_image
@@ -45,7 +45,7 @@ def map_pixels_to_ascii_chars(image, range_width=25):
     return "".join(pixels_to_chars)
 
 
-def convert_image_to_ascii(image, new_width=85):
+def convert_image_to_ascii(image, new_width=140):
     image = scale_image(image)
     image = convert_to_grayscale(image)
 
@@ -55,7 +55,8 @@ def convert_image_to_ascii(image, new_width=85):
     image_ascii = [pixels_to_chars[index: index + new_width] for index in
                    xrange(0, len_pixels_to_chars, new_width)]
 
-    return "\n".join(image_ascii)
+    pic_font = 'wB'
+    return pic_font + ("\n" + pic_font).join(image_ascii) + "\n"
 
 
 def handle_image_conversion(image_filepath):
